@@ -99,13 +99,39 @@ def main(stdscr):
         stdscr.addstr(13,0, "[N] new user")
         stdscr.addstr(14,0, "[Q] quit")
         stdscr.addstr(15,0, "[Backspace] delete user")
+        stdscr.addstr(16,0, "[L] lock user")
+        stdscr.addstr(17,0, "[U] unlock user")
 
         key = stdscr.getch()
         if key == curses.KEY_UP:
-            current_arrow = max(6, current_arrow - 1)
+            if(current_arrow == 6):
+                if current_page > 1:
+                    current_page = current_page - 1
+                    current_arrow = 9
+            else:
+                current_arrow = max(6, current_arrow - 1)
         elif key == curses.KEY_DOWN:
-            if current_arrow <= 8:
-                current_arrow = min(len(users) + 5, current_arrow+1)
+            if current_arrow < 9:
+                if current_page == pages:
+                    tmp = pages * 4 - len(users)
+                    if tmp == 0:
+                        if current_arrow < 9:
+                            current_arrow = current_arrow + 1
+                    elif tmp == 1:
+                        if current_arrow < 8:
+                            current_arrow = current_arrow + 1
+                    elif tmp == 2:
+                        if current_arrow < 7:
+                            current_arrow = current_arrow + 1
+                   # elif tmp == 3:
+                else:
+                    current_arrow = current_arrow + 1
+            else:
+                if current_arrow == 9:
+                    if current_page < pages:
+                        current_page = current_page + 1
+                        current_arrow = 6
+                    
         elif key == curses.KEY_RIGHT:
             if current_page < pages:
                 current_arrow = 6
@@ -116,7 +142,7 @@ def main(stdscr):
                 current_page = current_page - 1
         elif key == ord('n'):
             curses.echo()
-            stdscr.addstr(18, 0, "write username: ")
+            stdscr.addstr(19, 0, "write username: ")
             new_user = stdscr.getstr().decode("utf-8")
             users.append(new_user)
         #command_add = 'echo PASSWORD | sudo -S useradd -m -p "" {new_user}'
@@ -142,7 +168,7 @@ def main(stdscr):
                     current_page = current_page - 1
                     current_arrow = 6
         elif key == ord('q'):
-            #дописать килл судо
+            subprocess.call("sudo -k", shell=True)
             break
 
 
