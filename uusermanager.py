@@ -167,6 +167,16 @@ def main(stdscr):
                     pages = pages - 1
                     current_page = current_page - 1
                     current_arrow = 6
+        elif key == ord('l'):
+            if users[(current_arrow-6)+ (current_page*4)-4]=="aral" or users[(current_arrow-6)+(current_page*4)-4]=="aral-111":
+                pass
+            else:
+                subprocess.call(f"sudo usermod -L {users[(current_arrow-6) + (current_page*4) - 4]}", shell=True)
+                blocked_users.append(users[(current_arrow-6) + (current_page*       4) - 4])
+        elif key == ord('u'):
+            subprocess.call(f"sudo usermod -U {users[(current_arrow-       6) + (current_page*4) - 4]}", shell=True)
+            blocked_users.remove(users[(current_arrow-6)+(current_page*4)-4])
+            
         elif key == ord('q'):
             subprocess.call("sudo -k", shell=True)
             break
