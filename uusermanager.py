@@ -12,7 +12,6 @@ output = process.before.decode('utf-8')
 users = output.splitlines()
 print(users)
 blocked_users = []
-
 #for i in users:
     
  #   command = f'sudo -S passwd -S {i}'
@@ -37,6 +36,7 @@ def main(stdscr):
     current_arrow = 6
     current_page = 1
     curses.curs_set(0)
+    last_symbol = ""
     while isSudo == False:
         curses.echo()
         stdscr.addstr(1, 0, "write your sudo password: ")
@@ -101,7 +101,22 @@ def main(stdscr):
         stdscr.addstr(15,0, "[Backspace] delete user")
         stdscr.addstr(16,0, "[L] lock user")
         stdscr.addstr(17,0, "[U] unlock user")
-
+        if last_symbol == "yB":
+            stdscr.addstr(23,0, "user deleted successfully")
+        elif last_symbol == "yc":
+            stdscr.addstr(23,0, "deletion canceled")
+        elif last_symbol == "yN":
+            stdscr.addstr(23,0, "new user created successfully")
+        elif last_symbol == "yNc":
+            stdscr.addstr(23,0, "new user creation canceled")
+        elif last_symbol == "yL":
+            stdscr.addstr(23,0, "user locked successfully")
+        elif last_symbol == "yLc":
+            stdscr.addstr(23,0, "user blocking canceled")
+        elif last_symbol == "yU":
+            stdscr.addstr(23,0, "user unlocked successfully")
+        elif last_symbol == "yUc":
+            stdscr.addstr(23,0, "user locking canceled")
         key = stdscr.getch()
         if key == curses.KEY_UP:
             if(current_arrow == 6):
@@ -144,13 +159,19 @@ def main(stdscr):
             curses.echo()
             stdscr.addstr(19, 0, "write username: ")
             new_user = stdscr.getstr().decode("utf-8")
-            users.append(new_user)
+            stdscr.addstr(20,0, "are you sure about new user? type y or n: ")
+            flag = stdscr.getstr().decode("utf-8")
+            if flag == "y":
+                last_symbol = "yN"
+                users.append(new_user)
         #command_add = 'echo PASSWORD | sudo -S useradd -m -p "" {new_user}'
             #process = pexpect.spawn(command_add)
             #process.expect(pexpect.EOF)
-            subprocess.call(f"sudo useradd -m -p pass {new_user}", shell=True)
-            if len(users) % 4 == 1:
-                pages = pages + 1
+                subprocess.call(f"sudo useradd -m -p pass {new_user}", shell=True)
+                if len(users) % 4 == 1:
+                    pages = pages + 1
+            else:
+                last_symbol = "yNc"
             curses.noecho()
         elif key == curses.KEY_BACKSPACE:
         #while True:
@@ -160,23 +181,47 @@ def main(stdscr):
             if users[(current_arrow-6)+ (current_page*4)-4]=="aral" or users[(current_arrow-6)+(current_page*4)-4]=="aral-111":
                 pass
             else:
-                subprocess.call(f"sudo userdel -r {users[(current_arrow-6)+(current_page*4)-4]}", shell=True) 
-                users.remove(users[(current_arrow-6)+(current_page*4)-4])
-                current_arrow = current_arrow-1
-                if len(users)%4 == 0:
-                    pages = pages - 1
-                    current_page = current_page - 1
-                    current_arrow = 6
+                curses.echo()
+                stdscr.addstr(20,0, "are you sure want to delete? type y or n: ")
+                flag = stdscr.getstr().decode("utf-8")
+                if flag == "y":
+                    last_symbol = "yB"
+                    subprocess.call(f"sudo userdel -r {users[(current_arrow-6)+(current_page*4)-4]}", shell=True) 
+                    users.remove(users[(current_arrow-6)+(current_page*4)-4])
+                    current_arrow = current_arrow-1
+                    if len(users)%4 == 0:
+                        pages = pages - 1
+                        current_page = current_page - 1
+                        current_arrow = 6
+                else:
+                    last_symbol = "yc"
+                curses.noecho()
         elif key == ord('l'):
             if users[(current_arrow-6)+ (current_page*4)-4]=="aral" or users[(current_arrow-6)+(current_page*4)-4]=="aral-111":
                 pass
             else:
-                subprocess.call(f"sudo usermod -L {users[(current_arrow-6) + (current_page*4) - 4]}", shell=True)
-                blocked_users.append(users[(current_arrow-6) + (current_page*       4) - 4])
+                curses.echo()
+                stdscr.addstr(20,0, "are you sure want to block? type y or n: ")
+                flag = stdscr.getstr().decode("utf-8")
+                if flag == "y":
+                    last_symbol = "yL"
+                    subprocess.call(f"sudo usermod -L {users[(current_arrow-6) + (current_page*4) - 4]}", shell=True)
+                    blocked_users.append(users[(current_arrow-6) + (current_page*       4) - 4])
+                else:
+                    last_symbol = "yLc"
+                curses.noecho()
         elif key == ord('u'):
-            subprocess.call(f"sudo usermod -U {users[(current_arrow-       6) + (current_page*4) - 4]}", shell=True)
-            blocked_users.remove(users[(current_arrow-6)+(current_page*4)-4])
-            
+
+            curses.echo()
+            stdscr.addstr(20,0, "are you sure want to block? type y or n: ")
+            flag = stdscr.getstr().decode("utf-8")
+            if flag == "y":
+                last_symbol = "yU"
+                subprocess.call(f"sudo usermod -U {users[(current_arrow -6) + (current_page*4) - 4]}", shell=True)
+                blocked_users.remove(users[(current_arrow-6)+(current_page*4)-4])
+            else:
+                last_symbol = "yUc"
+            curses.noecho()
         elif key == ord('q'):
             subprocess.call("sudo -k", shell=True)
             break
