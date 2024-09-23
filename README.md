@@ -3,7 +3,7 @@
 **Console application for user management based on Linux system
 uses the Curses library to create a text interface and works with sudo via subprocess to add, lock, unlock and remove users on the system**
 
- ###Features:
+ ### Features:
   **Adding new users
     Blocking and unblocking users
     Removing users
