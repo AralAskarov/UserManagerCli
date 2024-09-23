@@ -6,9 +6,9 @@ uses the Curses library to create a text interface and works with sudo via subpr
 ![image](https://github.com/user-attachments/assets/23ba35ee-c197-43fa-bf6a-b4ca1a0bf356)
 
 ### Requirements:
-   Python 3.x
-   Linux
-   sudo rights
+   1) Python 3.x
+   2) Linux
+   3) sudo rights
 ### Installation
    1) git clone https://github.com/AralAskarov/UserManagerCli.git
    2) Make sure you have Python version 3.x installed. To check, use the command:
