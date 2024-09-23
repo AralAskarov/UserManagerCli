@@ -1,14 +1,11 @@
 import curses
 from curses import wrapper
-import pexpect
 import math
 import subprocess
 import time
 
-command = 'awk -F: \'$3 >= 1000 && $1 != "nobody" { print $1 }\' /etc/passwd'
-process = pexpect.spawn(command)
-process.expect(pexpect.EOF)
-output = process.before.decode('utf-8')
+
+output = subprocess.check_output('awk -F: \'$3 >= 1000 && $1 != "nobody" { print $1 }\' /etc/passwd',shell=True, text=True)
 users = output.splitlines()
 print(users)
 blocked_users = []
@@ -61,13 +58,9 @@ def main(stdscr):
                     break
                 
        
-    for i in users:    
-        command = f'sudo -S passwd -S {i}'
-        process = pexpect.spawn(command,timeout=5)                              
-        process.expect(pexpect.EOF)
-        output = process.before.decode('utf-8')
+    for i in users:
+        output = subprocess.check_output(f"sudo passwd -S {i}", shell=True, text=True)
         status = output.splitlines()
-        print(status)
         first_line = status[0]
         parts = first_line.split()
         status_flag = parts[1]
