@@ -13,19 +13,19 @@ users = output.splitlines()
 print(users)
 blocked_users = []
 
-for i in users:
+#for i in users:
     
-    command = f'sudo -S passwd -S {i}'
-    process = pexpect.spawn(command,timeout=5)
-    process.expect(pexpect.EOF)
-    output = process.before.decode('utf-8')
-    status = output.splitlines()
-    print(status)
-    first_line = status[0]
-    parts = first_line.split()
-    status_flag = parts[1]
-    if status_flag == 'L':
-        blocked_users.append(i)
+ #   command = f'sudo -S passwd -S {i}'
+  #  process = pexpect.spawn(command,timeout=5)
+   # process.expect(pexpect.EOF)
+   # output = process.before.decode('utf-8')
+  #  status = output.splitlines()
+   # print(status)
+    #first_line = status[0]
+    #parts = first_line.split()
+    #status_flag = parts[1]
+    #if status_flag == 'L':
+        #blocked_users.append(i)
 
     
 print(len(users))
@@ -60,7 +60,22 @@ def main(stdscr):
                     stdscr.clear()
                     break
                 
-        
+       
+    for i in users:    
+        command = f'sudo -S passwd -S {i}'
+        process = pexpect.spawn(command,timeout=5)                              
+        process.expect(pexpect.EOF)
+        output = process.before.decode('utf-8')
+        status = output.splitlines()
+        print(status)
+        first_line = status[0]
+        parts = first_line.split()
+        status_flag = parts[1]
+        if status_flag == 'L':
+            blocked_users.append(i)
+  
+
+
     while isSudo:
         stdscr.clear()
         stdscr.addstr(0, 0,'--------------------------------------------')
