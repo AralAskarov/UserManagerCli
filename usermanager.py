@@ -102,21 +102,27 @@ def main(stdscr):
         stdscr.addstr(16,0, "[L] lock user")
         stdscr.addstr(17,0, "[U] unlock user")
         if last_symbol == "yB":
-            stdscr.addstr(23,0, "user deleted successfully")
+            stdscr.addstr(20,0, "user del successfully")
         elif last_symbol == "yc":
-            stdscr.addstr(23,0, "deletion canceled")
+            stdscr.addstr(20,0, "deletion canceled")
         elif last_symbol == "yN":
-            stdscr.addstr(23,0, "new user created successfully")
+            stdscr.addstr(20,0, "created successfully")
         elif last_symbol == "yNc":
-            stdscr.addstr(23,0, "new user creation canceled")
+            stdscr.addstr(20,0, "creation canceled")
         elif last_symbol == "yL":
-            stdscr.addstr(23,0, "user locked successfully")
+            stdscr.addstr(20,0, "locked successfully")
         elif last_symbol == "yLc":
-            stdscr.addstr(23,0, "user blocking canceled")
+            stdscr.addstr(20,0, "blocking canceled")
         elif last_symbol == "yU":
-            stdscr.addstr(23,0, "user unlocked successfully")
+            stdscr.addstr(20,0, "unlocked successfully")
         elif last_symbol == "yUc":
-            stdscr.addstr(23,0, "user locking canceled")
+            stdscr.addstr(20,0, "unlocking canceled")
+        elif last_symbol == "exist already":
+            stdscr.addstr(20,0, "this user already exist")
+        elif last_symbol == "user already locked":
+            stdscr.addstr(20,0, "user already locked")
+        elif last_symbol == "user not locked":
+            stdscr.addstr(20,0, "user wasnt locked")
         key = stdscr.getch()
         if key == curses.KEY_UP:
             if(current_arrow == 6):
@@ -157,8 +163,11 @@ def main(stdscr):
                 current_page = current_page - 1
         elif key == ord('n'):
             curses.echo()
-            stdscr.addstr(19, 0, "write username: ")
+            stdscr.addstr(20, 0, "write username of your newuser: ")
             new_user = stdscr.getstr().decode("utf-8")
+            if new_user in users:
+                last_symbol = "exist already"
+                continue
             stdscr.addstr(20,0, "are you sure about new user? type y or n: ")
             flag = stdscr.getstr().decode("utf-8")
             if flag == "y":
@@ -197,6 +206,9 @@ def main(stdscr):
                     last_symbol = "yc"
                 curses.noecho()
         elif key == ord('l'):
+            if users[(current_arrow-6)+(current_page*4)-4] in blocked_users:
+                last_symbol = "user already locked"
+                continue
             if users[(current_arrow-6)+ (current_page*4)-4]=="aral" or users[(current_arrow-6)+(current_page*4)-4]=="aral-111":
                 pass
             else:
@@ -211,7 +223,11 @@ def main(stdscr):
                     last_symbol = "yLc"
                 curses.noecho()
         elif key == ord('u'):
-
+            if users[(current_arrow-6)+(current_page*4)-4] in blocked_users:
+                pass
+            else:
+                last_symbol = "user not locked"
+                continue
             curses.echo()
             stdscr.addstr(20,0, "are you sure want to block? type y or n: ")
             flag = stdscr.getstr().decode("utf-8")
